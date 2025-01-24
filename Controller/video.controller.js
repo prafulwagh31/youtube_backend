@@ -79,7 +79,7 @@ export const deleteVideo = async (req, res) => {
 export const searchVideo = async (req, res) => {
     const { searchVideo } = req.params;
     try {
-        const result = await Video.find({
+        const result = await videoModel.find({
             title: { $regex: searchVideo, $options: "i" }
         });
         if (!result || result.length < 1) {
