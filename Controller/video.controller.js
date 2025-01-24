@@ -74,3 +74,19 @@ export const deleteVideo = async (req, res) => {
         res.status(500).send({success: false, message: "Server Error", error: err.message});
     }
 }
+
+// Search Video - (GET)
+export const searchVideo = async (req, res) => {
+    const { searchVideo } = req.params;
+    try {
+        const result = await Video.find({
+            title: { $regex: searchVideo, $options: "i" }
+        });
+        if (!result || result.length < 1) {
+            return res.status(404).json({ success: false, message: "No video matched your search" });
+        }
+        res.status(200).json({ success: true, videos: result })
+    } catch (err) {
+        res.status(500).json({ success: false, message: "server error occured" });
+    }
+}
