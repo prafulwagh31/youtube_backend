@@ -45,6 +45,12 @@ export function userLogin(req, res){
             res.send({
                 success: true,
                 message: "User Login Successfully",
+                user: {
+                    id: data._id,
+                    userName: data.userName,
+                    email: data.email,
+                    avatar: data.avatar
+                },
                 token: accessToken
             });
         })
