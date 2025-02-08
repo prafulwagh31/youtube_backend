@@ -7,7 +7,7 @@ import { videoRoute } from "./Routes/video.routes.js";
 import { commentRoute } from "./Routes/comment.routes.js";
 
 let databaseName='YoutubeApp_db';
-mongoose.connect(`mongodb+srv://prafulwagh31:Waghpraful31%40@cluster0.wifyb.mongodb.net/`);
+mongoose.connect(`mongodb+srv://prafulwagh31:Waghpraful31@cluster0.wifyb.mongodb.net/`);
 
 const app = new express();
 const port = 5000;
