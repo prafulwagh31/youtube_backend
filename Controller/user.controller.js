@@ -5,9 +5,9 @@ import mongoose from "mongoose";
 
 // get single user
 export const getSingleUser = async (req, res) => {
-    if (!mongoose.isValidObjectId(req.params.id)) {
-        return res.status(400).json({ success: false, message: "invalid user" });
-    }
+    // if (!mongoose.isValidObjectId(req.params.id)) {
+    //     return res.status(400).json({ success: false, message: "invalid user" });
+    // }
 
     const id = req.params.id;
     try {
