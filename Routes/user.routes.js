@@ -3,5 +3,5 @@ import { getSingleUser, userLogin, userRegistration } from "../Controller/user.c
 export function userRoute(app){
     app.post("/youtube/register",userRegistration);
     app.post("/youtube/login", userLogin);
-    app.get("/youtube/:id", getSingleUser);
+    //app.get("/youtube/:id", getSingleUser);
 }

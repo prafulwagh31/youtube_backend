@@ -4,26 +4,26 @@ import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
 // get single user
-export const getSingleUser = async (req, res) => {
-    // if (!mongoose.isValidObjectId(req.params.id)) {
-    //     return res.status(400).json({ success: false, message: "invalid user" });
-    // }
+// export const getSingleUser = async (req, res) => {
+//     if (!mongoose.isValidObjectId(req.params.id)) {
+//         return res.status(400).json({ success: false, message: "invalid user" });
+//     }
 
-    const id = req.params.id;
-    try {
-        const result = await userModel.findById(id);
-        if (!result) {
-            return res.status(404).json({ success: false, message: "user not found" });
-        }
-        // Remove password from the response
-       const { password: userPassword, ...userWithoutPassword } = result.toObject();
+//     const id = req.params.id;
+//     try {
+//         const result = await userModel.findById(id);
+//         if (!result) {
+//             return res.status(404).json({ success: false, message: "user not found" });
+//         }
+//         // Remove password from the response
+//        const { password: userPassword, ...userWithoutPassword } = result.toObject();
 
-        res.status(200).json({ success: true, user: userWithoutPassword })
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ success: false, message: "server error occured" });
-    }
-}
+//         res.status(200).json({ success: true, user: userWithoutPassword })
+//     } catch (err) {
+//         console.log(err);
+//         res.status(500).json({ success: false, message: "server error occured" });
+//     }
+// }
 
 
 // Register API
