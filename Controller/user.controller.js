@@ -24,6 +24,34 @@ import mongoose from "mongoose";
 //         res.status(500).json({ success: false, message: "server error occured" });
 //     }
 // }
+export const getSingleUser = async (req, res) => {
+    const { id } = req.params;
+
+    // Check if ID is provided
+    if (!id) {
+        return res.status(400).json({ success: false, message: "User ID is required" });
+    }
+
+    // Validate MongoDB ObjectId
+    if (!mongoose.isValidObjectId(id)) {
+        return res.status(400).json({ success: false, message: "Invalid user ID format" });
+    }
+
+    try {
+        const user = await userModel.findById(id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        // Remove password before sending response
+        const { password, ...userWithoutPassword } = user.toObject();
+
+        return res.status(200).json({ success: true, user: userWithoutPassword });
+    } catch (error) {
+        console.error("Error fetching user:", error);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+};
 
 
 // Register API
