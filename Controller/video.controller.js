@@ -1,4 +1,5 @@
 import videoModel from "../Model/video.model.js";
+import mongoose from "mongoose";
 
 // Add Video - (POST)
 export const addVideo = async (req, res) => {
@@ -44,6 +45,27 @@ export function getVideoId(req, res){
         res.status(500).send({success: false, message: "Server Error", error: err.message});
     });
 }
+
+// Get channel video - (GET)
+export const getChannelVideos = async (req, res) => {
+
+    if (!mongoose.isValidObjectId(req.params)) {
+        return res.status(400).json({ success: false, message: "invalid video" });
+    }
+
+    const channelId = req.params;
+
+    try {
+        const result = await videoModel.find({ channelId: channelId });
+        if (!result || result.length < 1) {
+            return res.status(404).json({ success: false, message: "Videos not found" });
+        }
+        res.status(200).json({ success: true, videos: result })
+    } catch (err) {
+        res.status(500).json({ success: false, message: "Server error occured" });
+    }
+}
+
 
 // Update Video Details - (PUT)
 export const updateVideoDetails = async (req, res) => {
