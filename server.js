@@ -19,13 +19,13 @@ app.use(express.json());
 // mongoose.connect('mongodb://localhost:27017/youtubeapp_db')
 //   .then(() => console.log('MongoDB connected'))
 //   .catch((err) => console.log('MongoDB connection error:', err));
-let db=mongoose.connection;
-db.on('open',()=>{
-  console.log(`MongoDB Connection is Successful`)
-})
-db.on('error',()=>{
-  console.log(`MongoDB Connection isn't successful`)
-})
+// let db=mongoose.connection;
+// db.on('open',()=>{
+//   console.log(`MongoDB Connection is Successful`)
+// })
+// db.on('error',()=>{
+//   console.log(`MongoDB Connection isn't successful`)
+// })
 
 // Routes Calling
 userRoute(app);

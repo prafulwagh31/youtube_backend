@@ -46,25 +46,23 @@ export function getVideoId(req, res){
     });
 }
 
-// Get channel video - (GET)
 export const getChannelVideos = async (req, res) => {
-
-    if (!mongoose.isValidObjectId(req.params)) {
-        return res.status(400).json({ success: false, message: "invalid video" });
-    }
-
-    const channelId = req.params;
-
     try {
-        const result = await videoModel.find({ channelId: channelId });
-        if (!result || result.length < 1) {
-            return res.status(404).json({ success: false, message: "Videos not found" });
+        const { id: channelId } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(channelId)) {
+            return res.status(400).json({ success: false, message: "Invalid channel ID" });
         }
-        res.status(200).json({ success: true, videos: result })
+        const videos = await videoModel.find({ channelId: new mongoose.Types.ObjectId(channelId) });
+        if (!videos || videos.length === 0) {
+            return res.status(404).json({ success: false, message: "No videos found for this channel" });
+        }
+
+        res.status(200).json({ success: true, videos });
     } catch (err) {
-        res.status(500).json({ success: false, message: "Server error occured" });
+        console.error("Error fetching channel videos:", err); // Log full error
+        res.status(500).json({ success: false, message: "Server error occurred", error: err.message });
     }
-}
+};
 
 
 // Update Video Details - (PUT)
