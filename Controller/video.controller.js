@@ -1,23 +1,35 @@
 import videoModel from "../Model/video.model.js";
+import userModel from "../Model/user.model.js";
+import channelModel from "../Model/channel.model.js";
 import mongoose from "mongoose";
 
 // Add Video - (POST)
 export const addVideo = async (req, res) => {
-    const { title, description, thumbnailUrl, videoUrl, owner, channelId, category} = req.body;
+    const { title, description, thumbnailUrl, videoUrl, uploaderAuthor , channelId, category} = req.body;
 
-    try{
-        const newVideo = new videoModel({
-            title, description, thumbnailUrl, videoUrl, owner, channelId, category
-        });
-        newVideo.save();
-        res.status(201).send({
-            success: true,
-            message: "Video Added successfully",
-            data: newVideo
-        });
-    }
-    catch(err){
-        res.status(500).send({success: false, message: "Server Error", error: err.message});
+    try {
+        const user = await userModel.findById(uploaderAuthor);
+        const channel = await channelModel.findById(channelId);
+        if (!user) {
+            return res.status(400).json({ success: false, message: "User not found" });
+        }
+        if (!channel) {
+            return res.status(400).json({ success: false, message: "Create a channel before uploading video" })
+        }
+
+        if (channel.owner.toString() !== user._id.toString()) {
+            return res.status(403).json({ success: false, message: "unauthorised access : channel & user not match" })
+        }
+        const video = await videoModel.create({ title, description, thumbnailUrl, videoUrl, uploaderAuthor , channelId, category });
+
+        channel.videos.push(video._id);
+        await channel.save();
+
+        res.status(201).json({ success: true, message: "Video uploaded successfully", video });
+
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ success: false, message: "Server Error" })
     }
 }
 

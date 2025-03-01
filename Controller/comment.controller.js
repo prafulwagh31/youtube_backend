@@ -1,27 +1,36 @@
 import commentModel from "../Model/comment.model.js";
+import userModel from "../Model/user.model.js";
+import videoModel from "../Model/video.model.js";
+import mongoose from "mongoose";
 
 
 // Add Comment - (POST)
-export function addComment(req, res){
+export const addComment = async (req, res) => {
     const {description, userId, videoId} = req.body;
+    
+    try {
+        const user = await userModel.findById(userId);
+        const video = await videoModel.findById(videoId);
+        if (!user) {
+            return res.status(400).json({ success: false, message: "User not found" });
+        }
+        if (!video) {
+            return res.status(400).json({ success: false, message: "No video to comment" })
+        }
 
-    try{
-        const newComment = new commentModel({
-            description, 
-            userId,
-            videoId
-        });
-        newComment.save();
-        res.status(201).send({
-            success: true,
-            message: "Comment added successfully",
-            data: newComment
-        });
-    }
-    catch(err){
-        res.status(500).send({success: false, message: "Server Error", error: err.message});
+        const comment = await commentModel.create({ description, userId, videoId });
+
+        video.comments.push(comment._id);
+        await video.save();
+
+        res.status(201).json({ success: true, message: "Comment added successfully", comment });
+
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ success: false, message: "Server Error" })
     }
 }
+
 
 // Get All Comments - (GET)
 export function getAllComments(req, res){
@@ -36,7 +45,7 @@ export function getAllComments(req, res){
 }
 
 
-// Get specific channel - (GET)
+// Get specific comment - (GET)
 export function getCommentId(req, res){
     const id = req.params.id;
     commentModel.findById(id).then((data) => {
@@ -48,6 +57,55 @@ export function getCommentId(req, res){
         res.status(500).send({success: false, message: "Server Error", error: err.message});
     });
 }
+
+//Get single video comment - (GET)
+// export const getSingleVideoComments = async (req, res) => {
+//     try {
+//         const { id: videoId } = req.params;
+
+//         if (!mongoose.Types.ObjectId.isValid(videoId)) {
+//             return res.status(400).json({ success: false, message: "Invalid video ID" });
+//         }
+
+//         const comments = await commentModel.find({ videoId: new mongoose.Types.ObjectId(videoId) });
+//         console.log(comments);
+//         if (!comments || comments.length === 0) {
+//             return res.status(404).json({ success: false, message: "No comments found for this video" });
+//         }
+
+//         res.status(200).json({ success: true, comments });
+//     } catch (err) {
+//         console.error("Error fetching comments:", err);
+//         res.status(500).json({ success: false, message: "Server error occurred", error: err.message });
+//     }
+// };
+export const getSingleVideoComments = async (req, res) => {
+    try {
+        const { id: videoId } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(videoId)) {
+            return res.status(400).json({ success: false, message: "Invalid video ID" });
+        }
+
+        const video = await videoModel.findById(videoId);
+        if (!video) {
+            return res.status(404).json({ success: false, message: "Video not found" });
+        }
+
+        const commentIds = video.comments;
+        if (!commentIds || commentIds.length === 0) {
+            return res.status(404).json({ success: false, message: "No comments found for this video" });
+        }
+
+        const comments = await commentModel.find({ _id: { $in: commentIds } });
+
+        res.status(200).json({ success: true, comments });
+    } catch (err) {
+        console.error("Error fetching comments:", err);
+        res.status(500).json({ success: false, message: "Server error occurred", error: err.message });
+    }
+};
+
 
 
 //Update Channel Details - (PUT)
