@@ -1,26 +1,32 @@
 import channelModel from "../Model/channel.model.js";
+import userModel from "../Model/user.model.js";
 
 // Create Channel - (POST)
-export function createChannel(req, res){
-    const {channelName, owner, description, channelLogo, channelBanner} = req.body;
+export const createChannel = async (req, res) => {
+    const { channelName, owner, description, channelLogo, channelBanner } = req.body;
+    try {
+        const userMatch = await userModel.findOne({ _id: owner });
+        const channelMatch = await channelModel.findOne({ channelName: channelName });
 
-    try{
-        const newChannel = new channelModel({
-            channelName, 
-            owner,
-            description, 
-            channelLogo, 
-            channelBanner
-        });
-        newChannel.save();
-        res.status(201).send({
-            success: true,
-            message: "Channel created successfully",
-            data: newChannel
-        });
-    }
-    catch(err){
-        res.status(500).send({success: false, message: "Server Error", error: err.message});
+        if (channelMatch) {
+            return res.status(400).json({ success: false, message: "Channel name already exist !" });
+        }
+
+        if (!userMatch) {
+            return res.status(403).json({ success: false, message: "Invalid user credentials" });
+        }
+        if (userMatch.channel.length >= 1) {
+            return res.status(400).json({ success: false, message: "User can only use single channel with single email" });
+        }
+        const channel = await channelModel.create({ channelName, owner, description, channelLogo, channelBanner });
+
+        userMatch.channel.push(channel._id);
+        await userMatch.save();
+        res.status(201).json({ success: true, message: "Channel Created Successfully", channel });
+
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ success: false, message: "Server Error" })
     }
 }
 
