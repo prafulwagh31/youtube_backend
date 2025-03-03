@@ -9,12 +9,9 @@ export const createChannel = async (req, res) => {
         const channelMatch = await channelModel.findOne({ channelName: channelName });
 
         if (channelMatch) {
-            return res.status(400).json({ success: false, message: "Channel name already exist !" });
+            return res.status(400).json({ success: false, message: "Channel name already exist!" });
         }
 
-        if (!userMatch) {
-            return res.status(403).json({ success: false, message: "Invalid user credentials" });
-        }
         if (userMatch.channel.length >= 1) {
             return res.status(400).json({ success: false, message: "User can only use single channel with single email" });
         }
