@@ -7,7 +7,6 @@ import mongoose from "mongoose";
 // Add Comment - (POST)
 export const addComment = async (req, res) => {
     const {description, userId, videoId} = req.body;
-    
     try {
         const user = await userModel.findById(userId);
         const video = await videoModel.findById(videoId);
@@ -59,26 +58,6 @@ export function getCommentId(req, res){
 }
 
 //Get single video comment - (GET)
-// export const getSingleVideoComments = async (req, res) => {
-//     try {
-//         const { id: videoId } = req.params;
-
-//         if (!mongoose.Types.ObjectId.isValid(videoId)) {
-//             return res.status(400).json({ success: false, message: "Invalid video ID" });
-//         }
-
-//         const comments = await commentModel.find({ videoId: new mongoose.Types.ObjectId(videoId) });
-//         console.log(comments);
-//         if (!comments || comments.length === 0) {
-//             return res.status(404).json({ success: false, message: "No comments found for this video" });
-//         }
-
-//         res.status(200).json({ success: true, comments });
-//     } catch (err) {
-//         console.error("Error fetching comments:", err);
-//         res.status(500).json({ success: false, message: "Server error occurred", error: err.message });
-//     }
-// };
 export const getSingleVideoComments = async (req, res) => {
     try {
         const { id: videoId } = req.params;

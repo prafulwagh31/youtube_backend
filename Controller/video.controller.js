@@ -114,11 +114,14 @@ export const searchVideo = async (req, res) => {
         const result = await videoModel.find({
             title: { $regex: searchVideo, $options: "i" }
         });
+
         if (!result || result.length < 1) {
+            console.warn("No matching video found for:", searchVideo);
             return res.status(404).json({ success: false, message: "No video matched your search" });
         }
-        res.status(200).json({ success: true, videos: result })
+        res.status(200).json({ success: true, videos: result });
     } catch (err) {
-        res.status(500).json({ success: false, message: "server error occured" });
+        console.error("Search API Error:", err);
+        res.status(500).json({ success: false, message: "Server error occurred" });
     }
-}
+};

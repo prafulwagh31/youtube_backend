@@ -3,7 +3,24 @@ import userModel from "../Model/user.model.js";
 
 // Create Channel - (POST)
 export const createChannel = async (req, res) => {
+    if (!req.body.channelName) {
+        return res.status(400).json({ success: false, message: "Channel name is required" });
+    }
+    if (!req.body.owner) {
+        return res.status(400).json({ success: false, message: "Channel owner is required" });
+    }
+    if (!req.body.description) {
+        return res.status(400).json({ success: false, message: "Channel description is required" });
+    }
+    if (!req.body.channelLogo) {
+        return res.status(400).json({ success: false, message: "Channel logo is required" });
+    }
+    if (!req.body.channelBanner) {
+        return res.status(400).json({ success: false, message: "Channel banner is required" });
+    }
+
     const { channelName, owner, description, channelLogo, channelBanner } = req.body;
+
     try {
         const userMatch = await userModel.findOne({ _id: owner });
         const channelMatch = await channelModel.findOne({ channelName: channelName });
